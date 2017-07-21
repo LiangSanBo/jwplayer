@@ -769,7 +769,9 @@ define([
                 return _model.checkComplete();
             };
             this.addButton = function(img, ariaText, callback, id, btnClass) {
-                const customButton = {
+                let customButtons = _model.get('customButtons') || [];
+                let added = false;
+                const newButton = {
                     img: img,
                     ariaText: ariaText,
                     callback: callback,
@@ -777,10 +779,25 @@ define([
                     btnClass: btnClass
                 };
 
-                _model.trigger('addButton', customButton);
+                customButtons = _.reduce(customButtons, function(buttons, button) {
+                    if (button.id === newButton.id) {
+                        added = true;
+                        return newButton;
+                    }
+                    return button;
+                }, []);
+
+                if (!added) {
+                    customButtons.unshift(newButton);
+                }
+
+                _model.set('customButtons', customButtons);
             };
             this.removeButton = function(id) {
-                _model.trigger('removeButton', id);
+                let customButtons = _model.get('customButtons');
+                customButtons = _.filter(customButtons, (button) => button.id === id);
+
+                _model.set('customButtons', customButtons);
 
             };
             // Delegate trigger so we can run a middleware function before any event is bubbled through the API

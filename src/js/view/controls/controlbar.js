@@ -250,9 +250,7 @@ define([
             _model.change('nextUp', this.onNextUp, this);
             _model.change('cues', this.addCues, this);
             _model.change('altText', this.setAltText, this);
-
-            _model.on('addButton', this.addButton, this);
-            _model.on('removeButton', this.removeButton, this);
+            _model.change('customButtons', this.updateButtons, this);
 
             // Event listeners
 
@@ -516,40 +514,24 @@ define([
             this.elements.next.toggle(!!nextUp);
         }
 
-        addButton(buttonToAdd = {}) {
+        updateButtons(model, newButtons) {
             // TODO: Change to controlbar container
             const buttonContainer = this.elements.right;
-            let newButton = new CustomButton(
-                buttonToAdd.img,
-                buttonToAdd.ariaText,
-                buttonToAdd.callback,
-                buttonToAdd.id,
-                buttonToAdd.btnClass
-            );
+            const buttonElements = Array.from(buttonContainer.childNodes);
 
-            const buttons = Array.from(buttonContainer.childNodes);
-            for (let i = 0; i < buttons.length; i++) {
-                if (newButton.id === buttons[i].getAttribute('button')) {
-                    buttonContainer.replaceChild(newButton.element(), buttons[i]);
-                    newButton = null;
-                    break;
-                }
+            for (let i = 0; i < buttonElements.legnth; i++) {
+                buttonContainer.removeChild(buttonElements[i]);
             }
 
-            if (newButton) {
-                buttonContainer.insertBefore(newButton.element(), buttonContainer.firstChild);
-            }
-        }
-
-        removeButton(id = '') {
-            const buttonContainer = this.elements.right;
-            const buttons = Array.from(buttonContainer.childNodes);
-
-            for (let i = 0; i < buttons.length; i++) {
-                if (id === buttons[i].getAttribute('button')) {
-                    buttonContainer.removeChild(buttons[i]);
-                    break;
-                }
+            for (let i = 0; i < newButtons.length; i++) {
+                const newButton = new CustomButton(
+                    newButton[i].img,
+                    newButton[i].ariaText,
+                    newButton[i].callback,
+                    newButton[i].id,
+                    newButton[i].btnClass
+                );
+                buttonContainer.appendChild(newButton.element());
             }
         }
     };
